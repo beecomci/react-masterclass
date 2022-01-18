@@ -1,7 +1,10 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 const Container = styled.div`
+  max-width: 480px;
+  margin: 0 auto;
   padding: 0px 20px;
 `;
 
@@ -36,49 +39,65 @@ const Title = styled.h1`
   color: ${props => props.theme.accentColor};
 `;
 
-const coins = [
-  {
-    id: "btc-bitcoin",
-    name: "Bitcoin",
-    symbol: "BTC",
-    rank: 1,
-    is_new: false,
-    is_active: true,
-    type: "coin"
-  },
-  {
-    id: "eth-ethereum",
-    name: "Ethereum",
-    symbol: "ETH",
-    rank: 2,
-    is_new: false,
-    is_active: true,
-    type: "coin"
-  },
-  {
-    id: "hex-hex",
-    name: "HEX",
-    symbol: "HEX",
-    rank: 3,
-    is_new: false,
-    is_active: true,
-    type: "token"
-  }
-];
+const Loader = styled.span`
+  text-align: center;
+  display: block;
+`;
+
+interface CoinInterface {
+  id: string;
+  name: string;
+  symbol: string;
+  rank: number;
+  is_new: boolean;
+  is_active: boolean;
+  type: string;
+}
 
 function Coins() {
+  // state가 코인으로 된 array이다 설명
+  const [coins, setCoins] = useState<CoinInterface[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // API fetch 방법 1
+  const getCoins = async () => {
+    const json = await (
+      await fetch("https://api.coinpaprika.com/v1/coins")
+    ).json();
+  };
+
+  // 컴포넌트가 처음 시작될 때만 실행됨
+  useEffect(() => {
+    // API fetch 방법 1
+    // getCoins();
+
+    // API fetch 방법 2 : IIFE로 굳이 getCoins 함수를 또 만들 필요 없이 즉시 실행
+    (async () => {
+      const json = await (
+        await fetch("https://api.coinpaprika.com/v1/coins")
+      ).json();
+
+      setCoins(json.slice(0, 100));
+      setLoading(false);
+    })();
+  }, []);
+
   return (
     <Container>
       <Header>
         <Title>코인</Title>
       </Header>
-      <CoinsList>
-        {coins.map(coin => (
-          <Coin key={coin.id}>
-            <Link to={`/${coin.id}`}>{coin.name} &rarr;</Link>
-          </Coin>
-        ))}
-      </CoinsList>
+      {loading ? (
+        <Loader>Loading...</Loader>
+      ) : (
+        <CoinsList>
+          {coins.map(coin => (
+            <Coin key={coin.id}>
+              <Link to={`/${coin.id}`}>{coin.name} &rarr;</Link>
+            </Coin>
+          ))}
+        </CoinsList>
+      )}
     </Container>
   );
 }

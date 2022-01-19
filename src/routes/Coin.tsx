@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useLocation, useParams } from "react-router";
 import styled from "styled-components";
+import { Link, Routes, Route, useMatch } from "react-router-dom";
+import Price from "./Price";
+import Chart from "./Chart";
 
 const Container = styled.div`
   max-width: 480px;
@@ -22,6 +25,50 @@ const Title = styled.h1`
 const Loader = styled.span`
   text-align: center;
   display: block;
+`;
+
+const Overview = styled.div`
+  display: flex;
+  justify-content: space-between;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px 20px;
+  border-radius: 10px;
+`;
+const OverviewItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  span:first-child {
+    font-size: 10px;
+    font-weight: 400;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+`;
+const Description = styled.p`
+  margin: 20px 0px;
+`;
+
+const Tabs = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin: 25px 0px;
+  gap: 10px;
+`;
+
+const Tab = styled.span<{ isActice: boolean }>`
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 400;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 7px 0px;
+  border-radius: 10px;
+  color: ${props =>
+    props.isActice ? props.theme.accentColor : props.theme.textColor};
+  a {
+    display: block;
+  }
 `;
 
 interface RouteParams {
@@ -97,6 +144,8 @@ function Coin() {
   const [priceInfo, setPriceInfo] = useState<IPriceData>();
   const location = useLocation() as RouteStates;
   const name = location?.state?.name;
+  const priceMatch = useMatch("/:coinId/price"); // 내가 이 url 안에 있냐
+  const chartMatch = useMatch("/:coinId/chart");
 
   useEffect(() => {
     (async () => {
@@ -111,14 +160,61 @@ function Coin() {
       setPriceInfo(priceData);
       setLoading(false);
     })();
-  }, []);
+  }, [coinId]);
 
   return (
     <Container>
       <Header>
-        <Title>{name ? name : "Loading..."}</Title>
+        {/* state로부터 온 name이 있으면 -> name or 없으면 -> loading */}
+        {/* 근데 loading이 true면 Loading 메세지를 or false면 API로부터 온 name  */}
+        <Title>{name ? name : loading ? "Loading..." : info?.name}</Title>
       </Header>
-      {loading ? <Loader>Loading...</Loader> : info?.name}
+      {loading ? (
+        <Loader>Loading...</Loader>
+      ) : (
+        <>
+          <Overview>
+            <OverviewItem>
+              <span>Rank:</span>
+              <span>{info?.rank}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>Symbol:</span>
+              <span>${info?.symbol}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>Open Source:</span>
+              <span>{info?.open_source ? "Yes" : "No"}</span>
+            </OverviewItem>
+          </Overview>
+          <Description>{info?.description}</Description>
+          <Overview>
+            <OverviewItem>
+              <span>Total Suply:</span>
+              <span>{priceInfo?.total_supply}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>Max Supply:</span>
+              <span>{priceInfo?.max_supply}</span>
+            </OverviewItem>
+          </Overview>
+
+          {/* chartMatch가 null이 아님 -> /:coinId/chart url에 들어와있다면 isActice는 true */}
+          <Tabs>
+            <Tab isActice={chartMatch !== null}>
+              <Link to={`/${coinId}/chart`}>Chart</Link>
+            </Tab>
+            <Tab isActice={priceMatch !== null}>
+              <Link to={`/${coinId}/price`}>Price</Link>
+            </Tab>
+          </Tabs>
+
+          <Routes>
+            <Route path="/price" element={<Price />}></Route>
+            <Route path="/chart" element={<Chart />}></Route>
+          </Routes>
+        </>
+      )}
     </Container>
   );
 }

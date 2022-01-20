@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useQuery } from "react-query";
+import { fetchCoins } from "../api";
 
 const Container = styled.div`
   max-width: 480px;
@@ -50,7 +52,7 @@ const Img = styled.img`
   margin-right: 10px;
 `;
 
-interface CoinInterface {
+interface ICoin {
   id: string;
   name: string;
   symbol: string;
@@ -61,43 +63,20 @@ interface CoinInterface {
 }
 
 function Coins() {
-  // state가 코인으로 된 array이다 설명
-  const [coins, setCoins] = useState<CoinInterface[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // API fetch 방법 1
-  const getCoins = async () => {
-    const json = await (
-      await fetch("https://api.coinpaprika.com/v1/coins")
-    ).json();
-  };
-
-  // 컴포넌트가 처음 시작될 때만 실행됨
-  useEffect(() => {
-    // API fetch 방법 1
-    // getCoins();
-
-    // API fetch 방법 2 : IIFE로 굳이 getCoins 함수를 또 만들 필요 없이 즉시 실행
-    (async () => {
-      const json = await (
-        await fetch("https://api.coinpaprika.com/v1/coins")
-      ).json();
-
-      setCoins(json.slice(0, 100));
-      setLoading(false);
-    })();
-  }, []);
+  // param1 : query id
+  // param2 : function
+  const { isLoading, data } = useQuery<ICoin[]>("allCoins", fetchCoins);
 
   return (
     <Container>
       <Header>
         <Title>코인</Title>
       </Header>
-      {loading ? (
+      {isLoading ? (
         <Loader>Loading...</Loader>
       ) : (
         <CoinsList>
-          {coins.map(coin => (
+          {data?.slice(0, 100).map(coin => (
             <Coin key={coin.id}>
               <Link to={`/${coin.id}`} state={{ name: coin.name }}>
                 <Img

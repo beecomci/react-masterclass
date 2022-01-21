@@ -63,7 +63,7 @@ interface ICoin {
 }
 
 function Coins() {
-  // param1 : query id
+  // param1 : query id (고유하게 식별해주는 key)
   // param2 : function
   const { isLoading, data } = useQuery<ICoin[]>("allCoins", fetchCoins);
 

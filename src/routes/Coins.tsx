@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import { fetchCoins } from "../api";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 
 const Container = styled.div`
   max-width: 480px;
@@ -69,6 +70,12 @@ function Coins() {
 
   return (
     <Container>
+      <HelmetProvider>
+        <Helmet>
+          <title>코인 목록</title>
+        </Helmet>
+      </HelmetProvider>
+
       <Header>
         <Title>코인</Title>
       </Header>

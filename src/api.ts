@@ -14,3 +14,12 @@ export function fetchCoinTickers(coinId: string) {
     response.json()
   );
 }
+
+export function fetchCoinHistory(coinId: string) {
+  const endDate = Math.floor(Date.now() / 1000); // milliesconds to seconds
+  const startDate = endDate - 60 * 60 * 24 * 7 * 2; // 2주일 전
+
+  return fetch(
+    `${BASE_URL}/coins/${coinId}/ohlcv/historical?start=${startDate}&end=${endDate}`
+  ).then(response => response.json());
+}

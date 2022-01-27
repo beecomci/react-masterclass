@@ -6,6 +6,7 @@ import { useQuery } from "react-query";
 import Price from "./Price";
 import Chart from "./Chart";
 import { fetchCoinInfo, fetchCoinTickers } from "../api";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 
 const Container = styled.div`
   max-width: 480px;
@@ -139,6 +140,8 @@ interface IPriceData {
   };
 }
 
+interface ICoinID {}
+
 function Coin() {
   const { coinId } = useParams();
   const location = useLocation() as RouteStates;
@@ -156,15 +159,24 @@ function Coin() {
     ["info", coinId],
     () => fetchCoinInfo(coinId!)
   );
+  // useQuery의 param3 : optional, refetchInterval로 ms초마다 데이터 갱신 -> UI re-render
+  // 주기적으로 백그라운드에서 데이터를 update 가능
   const { isLoading: tickersLoading, data: tickersData } = useQuery<IPriceData>(
     ["tickers", coinId],
-    () => fetchCoinTickers(coinId!)
+    () => fetchCoinTickers(coinId!),
+    { refetchInterval: 5000 }
   );
 
   const loading = infoLoading || tickersLoading;
 
   return (
     <Container>
+      <HelmetProvider>
+        <Helmet>
+          <title>{name ? name : loading ? "Loading..." : infoData?.name}</title>
+        </Helmet>
+      </HelmetProvider>
+
       <Header>
         {/* state로부터 온 name이 있으면 -> name or 없으면 -> loading */}
         {/* 근데 loading이 true면 Loading 메세지를 or false면 API로부터 온 name  */}
@@ -184,8 +196,8 @@ function Coin() {
               <span>${infoData?.symbol}</span>
             </OverviewItem>
             <OverviewItem>
-              <span>Open Source:</span>
-              <span>{infoData?.open_source ? "Yes" : "No"}</span>
+              <span>Price:</span>
+              <span>${tickersData?.quotes.USD.price.toFixed(3)}</span>
             </OverviewItem>
           </Overview>
           <Description>{infoData?.description}</Description>
@@ -212,7 +224,7 @@ function Coin() {
 
           <Routes>
             <Route path="/price" element={<Price />}></Route>
-            <Route path="/chart" element={<Chart />}></Route>
+            <Route path="/chart" element={<Chart coinId={coinId!} />}></Route>
           </Routes>
         </>
       )}

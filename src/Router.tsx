@@ -1,14 +1,33 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Coins from "./routes/Coins";
-import Coin from "./routes/Coin";
+import styled from "styled-components";
+import Home from "./routes/Home";
+import Exchange from "./routes/Exchange";
+import Header from "./components/Header";
+import NotFound from "./components/NotFound";
+
+const Container = styled.div`
+  width: 1400px;
+  height: 100%;
+  margin: 0 auto;
+
+  &:after {
+    display: block;
+    clear: both;
+    content: "";
+  }
+`;
 
 function Router() {
   return (
     <BrowserRouter basename={process.env.PUBLIC_URL}>
-      <Routes>
-        <Route path="/:coinId/*" element={<Coin />}></Route>
-        <Route path="/" element={<Coins />}></Route>
-      </Routes>
+      <Header />
+      <Container>
+        <Routes>
+          <Route path="/exchange/:coinId/*" element={<Exchange />}></Route>
+          <Route path="/" element={<Home />}></Route>
+          <Route path="/*" element={<NotFound />}></Route>
+        </Routes>
+      </Container>
     </BrowserRouter>
   );
 }

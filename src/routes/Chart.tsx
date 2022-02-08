@@ -22,7 +22,7 @@ function Chart({ coinId }: IChartProps) {
   const { isLoading, data } = useQuery<IHistoricalData[]>(
     ["ohlcv", coinId],
     () => fetchCoinHistory(coinId),
-    { refetchInterval: 10000 }
+    { refetchInterval: 5000 }
   );
 
   return (
@@ -31,11 +31,20 @@ function Chart({ coinId }: IChartProps) {
         "Loading chart..."
       ) : (
         <ApexChart
-          type="line"
+          type="candlestick"
           series={[
             {
-              name: "price",
-              data: data?.map(price => price.close)
+              data: data?.map(price => {
+                return {
+                  x: price.time_open,
+                  y: [
+                    price.open.toFixed(2),
+                    price.high.toFixed(2),
+                    price.low.toFixed(2),
+                    price.close.toFixed(2)
+                  ]
+                };
+              })
             }
           ]}
           options={{
@@ -43,48 +52,21 @@ function Chart({ coinId }: IChartProps) {
               mode: "dark"
             },
             chart: {
-              width: 500,
-              height: 300,
               toolbar: {
                 show: false
               },
               background: "transparent"
             },
-            stroke: {
-              curve: "smooth",
-              width: 4
-            },
-            grid: {
-              show: false
-            },
-            yaxis: {
-              show: false
+            plotOptions: {
+              candlestick: {
+                colors: {
+                  upward: "#d60000",
+                  downward: "#0051c7"
+                }
+              }
             },
             xaxis: {
-              axisBorder: {
-                show: false
-              },
-              axisTicks: {
-                show: false
-              },
-              labels: {
-                show: false
-              },
-              type: "datetime",
-              categories: data?.map(price => price.time_close)
-            },
-            fill: {
-              type: "gradient",
-              gradient: {
-                gradientToColors: ["#0be881"],
-                stops: [0, 100]
-              }
-            },
-            colors: ["#0fbcf9"],
-            tooltip: {
-              y: {
-                formatter: value => `$ ${value.toFixed(2)}`
-              }
+              type: "datetime"
             }
           }}
         />

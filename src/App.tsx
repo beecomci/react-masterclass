@@ -66,6 +66,13 @@ const GlobalStyle = createGlobalStyle`
     text-decoration: none;
     color: inherit;
   }
+  #root {
+    height: 100%;
+    padding-top: 100px;
+  }
+  html, body {
+    height: 100%;
+  }
 `;
 
 function App() {

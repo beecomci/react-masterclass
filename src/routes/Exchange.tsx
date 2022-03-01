@@ -229,7 +229,11 @@ interface ICoin {
   type: string;
 }
 
-function Exchange() {
+interface IExchangeProps {
+  isDark: boolean;
+}
+
+function Exchange({ isDark }: IExchangeProps) {
   const { coinId } = useParams();
   const location = useLocation() as RouteStates;
   const name = location?.state?.name;
@@ -326,7 +330,10 @@ function Exchange() {
 
             <Routes>
               <Route path="/price" element={<Price coinId={coinId!} />}></Route>
-              <Route path="/chart" element={<Chart coinId={coinId!} />}></Route>
+              <Route
+                path="/chart"
+                element={<Chart isDark={isDark} coinId={coinId!} />}
+              ></Route>
             </Routes>
           </>
         )}

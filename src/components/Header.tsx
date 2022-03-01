@@ -42,7 +42,13 @@ const MenuItem = styled.li`
   line-height: 60px;
 `;
 
-function Header() {
+// step5. Router로 부터 받은 props의 type을 정의하기 위해 interface
+interface IHeaderProps {
+  toggleDark: () => void;
+}
+
+function Header({ toggleDark }: IHeaderProps) {
+  // step6. 드디어 받은 toggleDark를 button에 onClick 함수로 사용 가능
   return (
     <Container>
       <HeaderSection>
@@ -52,6 +58,9 @@ function Header() {
         <Menu>
           <MenuItem>
             <Link to="/exchange/btc-bitcoin/chart">거래소</Link>
+          </MenuItem>
+          <MenuItem>
+            <button onClick={toggleDark}>Toggle Mode</button>
           </MenuItem>
         </Menu>
       </HeaderSection>

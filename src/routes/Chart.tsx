@@ -4,6 +4,7 @@ import ApexChart from "react-apexcharts";
 
 interface IChartProps {
   coinId: string;
+  isDark: boolean;
 }
 
 interface IHistoricalData {
@@ -17,7 +18,7 @@ interface IHistoricalData {
   market_cap: number;
 }
 
-function Chart({ coinId }: IChartProps) {
+function Chart({ coinId, isDark }: IChartProps) {
   // 2주일치(14개)의 데이터를 받아오니 data는 array
   const { isLoading, data } = useQuery<IHistoricalData[]>(
     ["ohlcv", coinId],
@@ -49,7 +50,7 @@ function Chart({ coinId }: IChartProps) {
           ]}
           options={{
             theme: {
-              mode: "dark"
+              mode: isDark ? "dark" : "light"
             },
             chart: {
               toolbar: {

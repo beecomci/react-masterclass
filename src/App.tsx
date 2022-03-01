@@ -1,6 +1,9 @@
+import { useState } from "react";
 import Router from "./Router";
 import { createGlobalStyle } from "styled-components";
 import { ReactQueryDevtools } from "react-query/devtools";
+import { ThemeProvider } from "styled-components";
+import { darkTheme, lightTheme } from "./theme";
 
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
@@ -76,11 +79,18 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 function App() {
+  // step1. state 사용을 위해 ThemeProvider를 index to App으로 위치 옮김
+  const [isDark, setIsDark] = useState(false);
+  const toggleDark = () => setIsDark(current => !current);
+
+  // step2. Header에 있는 button까지 toggleDark 함수를 전달하기 위해서 Router에 props로 전달
   return (
     <>
-      <GlobalStyle />
-      <Router />
-      <ReactQueryDevtools initialIsOpen={true} />
+      <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+        <GlobalStyle />
+        <Router isDark={isDark} toggleDark={toggleDark} />
+        <ReactQueryDevtools initialIsOpen={true} />
+      </ThemeProvider>
     </>
   );
 }

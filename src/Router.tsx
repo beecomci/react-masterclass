@@ -17,23 +17,13 @@ const Container = styled.div`
   }
 `;
 
-// step3. App으로 부터 받은 props의 type을 정의하기 위해 interface
-interface IRouteProps {
-  toggleDark: () => void; // argument를 받지 않고 void를 return하는 함수
-  isDark: boolean;
-}
-
-function Router({ toggleDark, isDark }: IRouteProps) {
-  // step4. Header로 다시 toggleDark를 props로 전달
+function Router() {
   return (
     <BrowserRouter basename={process.env.PUBLIC_URL}>
-      <Header toggleDark={toggleDark} />
+      <Header />
       <Container>
         <Routes>
-          <Route
-            path="/exchange/:coinId/*"
-            element={<Exchange isDark={isDark} />}
-          ></Route>
+          <Route path="/exchange/:coinId/*" element={<Exchange />}></Route>
           <Route path="/" element={<Home />}></Route>
           <Route path="/*" element={<NotFound />}></Route>
         </Routes>

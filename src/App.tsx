@@ -1,9 +1,10 @@
-import { useState } from "react";
 import Router from "./Router";
 import { createGlobalStyle } from "styled-components";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ThemeProvider } from "styled-components";
 import { darkTheme, lightTheme } from "./theme";
+import { useRecoilValue } from "recoil";
+import { isDarkAtom } from "./routes/atoms";
 
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
@@ -59,7 +60,7 @@ const GlobalStyle = createGlobalStyle`
     box-sizing: border-box;
   }
   body {
-    background-color: ${props => props.theme.bgColor};
+    background-color: ${props => props.theme.bodyBgColor};
     font-family: 'Source Sans Pro', sans-serif;
     line-height: 1.2;
     font-weight: 300;
@@ -79,16 +80,14 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 function App() {
-  // step1. state 사용을 위해 ThemeProvider를 index to App으로 위치 옮김
-  const [isDark, setIsDark] = useState(false);
-  const toggleDark = () => setIsDark(current => !current);
+  // atom의 value를 감지하기 위한 hook
+  const isDark = useRecoilValue(isDarkAtom);
 
-  // step2. Header에 있는 button까지 toggleDark 함수를 전달하기 위해서 Router에 props로 전달
   return (
     <>
       <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
         <GlobalStyle />
-        <Router isDark={isDark} toggleDark={toggleDark} />
+        <Router />
         <ReactQueryDevtools initialIsOpen={true} />
       </ThemeProvider>
     </>

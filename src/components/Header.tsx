@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import ToggleBtn from "./ToggleBtn";
 
 const Container = styled.header`
   overflow: hidden;
@@ -20,6 +21,7 @@ const HeaderSection = styled.section`
   width: 1400px;
   height: 60px;
   margin: 0 auto;
+  color: #fff;
 `;
 
 const Title = styled.h1`
@@ -38,17 +40,12 @@ const Menu = styled.ul`
 const MenuItem = styled.li`
   float: left;
   height: 60px;
+  margin-right: 15px;
   font-size: 20px;
   line-height: 60px;
 `;
 
-// step5. Router로 부터 받은 props의 type을 정의하기 위해 interface
-interface IHeaderProps {
-  toggleDark: () => void;
-}
-
-function Header({ toggleDark }: IHeaderProps) {
-  // step6. 드디어 받은 toggleDark를 button에 onClick 함수로 사용 가능
+function Header() {
   return (
     <Container>
       <HeaderSection>
@@ -60,7 +57,7 @@ function Header({ toggleDark }: IHeaderProps) {
             <Link to="/exchange/btc-bitcoin/chart">거래소</Link>
           </MenuItem>
           <MenuItem>
-            <button onClick={toggleDark}>Toggle Mode</button>
+            <ToggleBtn />
           </MenuItem>
         </Menu>
       </HeaderSection>

@@ -16,8 +16,8 @@ const CoinsList = styled.ul`
 const Coin = styled.li`
   display: flex;
   align-items: center;
-  background-color: white;
-  color: ${props => props.theme.textColor};
+  background-color: ${props => props.theme.listBgColor};
+  color: #000;
   border-radius: 15px;
   a {
     display: flex;
